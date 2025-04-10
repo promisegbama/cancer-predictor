@@ -33,29 +33,34 @@ def log_unusual_inputs():
 
     return {'status': 'logged'}, 200
 
-@app.route('/predict', methods=['GET', 'POST'])
+@app.route('/predict', methods=['POST'])
 def predict():
-    # Get the user input from the form
-    input_features = [float(x) for x in request.form.values()]
+    input_values = [
+        float(request.form['concave points_worst']),
+        float(request.form['perimeter_worst']),
+        float(request.form['concave points_mean']),
+        float(request.form['radius_worst']),
+        float(request.form['perimeter_mean']),
+        float(request.form['area_worst']),
+        float(request.form['radius_mean'])
+    ]
+    input_df = pd.DataFrame([input_values], columns=[
+        'concave points_worst', 'perimeter_worst', 'concave points_mean',
+        'radius_worst', 'perimeter_mean', 'area_worst', 'radius_mean'
+    ])
 
-    # Convert the input features to a Pandas DataFrame
-    input_df = pd.DataFrame([input_features], columns=['concave points_worst', 'perimeter_worst', 'concave points_mean', 'radius_worst', 'perimeter_mean', 'area_worst', 'radius_mean'])
+    prediction = pipeline.predict(input_df)[0]
+    prob = pipeline.predict_proba(input_df)[0][int(prediction)] * 100
+    label = 'Malignant' if prediction == 1 else 'Benign'
+    color = 'malignant' if prediction == 1 else 'benign'
 
-    # Use the pipeline to make a prediction
-    prediction = pipeline.predict(input_df)
-
-    # Convert the prediction to a string
-    if prediction == 1:
-        result = 'Malignant'
-        prediction_color = 'malignant'
-    else:
-        result = 'Benign'
-        prediction_color = 'benign'
-
-    # Render the index page with the prediction
-    template_dir = os.path.abspath('./')
-    return render_template('index.html', prediction=result, prediction_color=prediction_color, template_dir=template_dir)
-
+    return render_template(
+        'index.html',
+        prediction=label,
+        prediction_color=color,
+        confidence=round(prob, 2),
+        input_values=input_values
+    )
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=True)
