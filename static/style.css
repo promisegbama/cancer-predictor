@@ -1,42 +1,42 @@
 body {
-  font-family: Arial, sans-serif;
-  background: #f8f9fa;
-  padding: 2rem;
-  max-width: 600px;
-  margin: auto;
-}
-h1 {
-  color: #333;
-}
-label {
-  font-weight: bold;
-  display: block;
-  margin-top: 1rem;
-}
-input[type="number"] {
-  width: 100%;
-  padding: 8px;
-  margin-top: 4px;
-  box-sizing: border-box;
-}
-button {
-  margin-top: 2rem;
-  padding: 10px 20px;
-  background-color: #007bff;
-  border: none;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-}
-.result {
-  margin-top: 2rem;
-  padding: 1rem;
-  background-color: #e2e3e5;
-  border-radius: 5px;
-}
-.benign {
-  color: green;
-}
-.malignant {
-  color: red;
-}
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            padding: 2rem;
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            color: #333;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 1rem;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 2rem;
+            padding: 10px 20px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #e2e3e5;
+            border-radius: 5px;
+        }
+        .benign {
+            color: green;
+        }
+        .malignant {
+            color: red;
+        }
