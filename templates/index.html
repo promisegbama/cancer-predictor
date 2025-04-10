@@ -2,86 +2,208 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cancer Type Predictor</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f8f9fa;
-            padding: 2rem;
-            max-width: 600px;
-            margin: auto;
-        }
-        h1 {
-            color: #333;
-        }
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 1rem;
-        }
-        input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            margin-top: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            margin-top: 2rem;
-            padding: 10px 20px;
-            background-color: #007bff;
-            border: none;
-            color: white;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-        .result {
-            margin-top: 2rem;
-            padding: 1rem;
-            background-color: #e2e3e5;
-            border-radius: 5px;
-        }
-        .benign {
-            color: green;
-        }
-        .malignant {
-            color: red;
-        }
-    </style>
+    <title>Smart Breast Cancer Risk Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <h1>Welcome to My Cancer Type Predictor App! 🧬</h1>
+    <h1>🩺 Smart Breast Cancer Risk Predictor</h1>
 
-    <form method="POST" action="/predict">
-        <label>Concave Points (Worst):</label>
-        <input type="number" step="any" name="concave points_worst" placeholder="e.g. 0.2654" required>
+    <button class="collapsible">🆘 Help Panel</button>
+    <div class="content collapsed">
+        <ul>
+            <li><strong>Concave Points:</strong> Measures how sharp the tumor's edges are.</li>
+            <li><strong>Perimeter:</strong> The outline length around the tumor.</li>
+            <li><strong>Radius:</strong> Approximate distance from center to edge of the tumor.</li>
+            <li><strong>Area:</strong> The surface area covered by the tumor.</li>
+            <li><strong>Worst:</strong> Maximum value across all sections of a tumor.</li>
+            <li><strong>Mean:</strong> Average value across all measured points.</li>
+        </ul>
+    </div>
 
-        <label>Perimeter (Worst):</label>
-        <input type="number" step="any" name="perimeter_worst" placeholder="e.g. 184.6" required>
+    <form method="POST" action="/predict" onsubmit="return validateInputs()">
+        <label class="field-label">
+            Concave Points (Worst)
+            <span class="info-tip" title="Sharpness of tumor's edge at worst point.">❓</span>
+        </label>
+        <input type="number" step="any" name="concave points_worst" id="cpw" required>
 
-        <label>Concave Points (Mean):</label>
-        <input type="number" step="any" name="concave points_mean" placeholder="e.g. 0.1471" required>
+        <label class="field-label">
+            Perimeter (Worst)
+            <span class="info-tip" title="Longest outline distance of tumor in worst case.">❓</span>
+        </label>
+        <input type="number" step="any" name="perimeter_worst" id="pw" required>
 
-        <label>Radius (Worst):</label>
-        <input type="number" step="any" name="radius_worst" placeholder="e.g. 25.38" required>
+        <label class="field-label">
+            Concave Points (Mean)
+            <span class="info-tip" title="Average sharpness of the tumor's edges.">❓</span>
+        </label>
+        <input type="number" step="any" name="concave points_mean" id="cpm" required>
 
-        <hr style="margin-top:2rem; margin-bottom:2rem;">
+        <label class="field-label">
+            Radius (Worst)
+            <span class="info-tip" title="Largest radius of the tumor recorded.">❓</span>
+        </label>
+        <input type="number" step="any" name="radius_worst" id="rw" required>
 
-        <label>Perimeter (Mean):</label>
-        <input type="number" step="any" name="perimeter_mean" placeholder="e.g. 122.8" required>
+        <label class="field-label">
+            Perimeter (Mean)
+            <span class="info-tip" title="Average distance around the tumor.">❓</span>
+        </label>
+        <input type="number" step="any" name="perimeter_mean" id="pm" required>
 
-        <label>Area (Worst):</label>
-        <input type="number" step="any" name="area_worst" placeholder="e.g. 2019" required>
+        <label class="field-label">
+            Area (Worst)
+            <span class="info-tip" title="Maximum surface area covered by the tumor.">❓</span>
+        </label>
+        <input type="number" step="any" name="area_worst" id="aw" required>
 
-        <label>Radius (Mean):</label>
-        <input type="number" step="any" name="radius_mean" placeholder="e.g. 17.99" required>
+        <label class="field-label">
+            Radius (Mean)
+            <span class="info-tip" title="Average radius of the tumor.">❓</span>
+        </label>
+        <input type="number" step="any" name="radius_mean" id="rm" required>
 
-        <button type="submit">Predict Cancer Type</button>
+        <div id="warning" style="display:none; color:red; text-align:center; margin-top:1rem; font-weight: bold;">⚠️ One or more values are unusually high. Please verify your input.</div>
+
+        <div style="text-align: center; margin-top: 1rem;">
+            <button type="button" onclick="fillDemoValues()">🧪 Use Demo Values</button>
+            <button type="button" onclick="clearForm()">🧹 Reset Form</button>
+            <button type="submit">🔍 Predict Cancer Risk</button>
+            <div class="spinner" id="spinner"></div>
+        </div>
     </form>
 
     {% if prediction %}
     <div class="result {{ prediction_color }}">
         <h3>Prediction Result: {{ prediction }}</h3>
+        <p>🧠 Confidence Score: {{ confidence }}%</p>
+        <p>📊 Model Insight: The prediction is influenced mostly by features such as concave points and perimeter measurements, which are strong indicators of malignancy in tumors.</p>
+        <button onclick="downloadPDF()">📄 Export as PDF</button>
     </div>
+
+    <canvas id="chart" style="max-width: 100%; margin-top: 2rem;"></canvas>
+    <script>
+        const ctx = document.getElementById('chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Concave Pts Worst', 'Perimeter Worst', 'Concave Pts Mean', 'Radius Worst', 'Perimeter Mean', 'Area Worst', 'Radius Mean'],
+                datasets: [{
+                    label: 'Your Input Values',
+                    data: [{{ input_values|join(',') }}],
+                    backgroundColor: '#007bff'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+    <script>
+        const audio = new Audio();
+        {% if prediction_color == 'malignant' %}
+        audio.src = '{{ url_for('static', filename='alert.mp3') }}';
+        {% else %}
+        audio.src = '{{ url_for('static', filename='safe.mp3') }}';
+        {% endif %}
+        audio.play();
+    </script>
     {% endif %}
+
+    <div class="footer">
+        Developed by <strong>XYZ</strong> | Powered by Machine Learning 🧠
+    </div>
+
+    <script>
+        let thresholds = {
+            cpw: 0.3, pw: 200, cpm: 0.2, rw: 30, pm: 150, aw: 2500, rm: 20
+        };
+
+        function fillDemoValues() {
+            document.getElementById('cpw').value = 0.2654;
+            document.getElementById('pw').value = 184.6;
+            document.getElementById('cpm').value = 0.1471;
+            document.getElementById('rw').value = 25.38;
+            document.getElementById('pm').value = 122.8;
+            document.getElementById('aw').value = 2019;
+            document.getElementById('rm').value = 17.99;
+        }
+
+        function clearForm() {
+            const fields = ['cpw', 'pw', 'cpm', 'rw', 'pm', 'aw', 'rm'];
+            fields.forEach(id => document.getElementById(id).value = '');
+            document.getElementById('warning').style.display = 'none';
+        }
+
+        function showSpinner() {
+            document.getElementById('spinner').style.display = 'block';
+        }
+
+        function validateInputs() {
+            const inputs = {
+                cpw: parseFloat(document.getElementById('cpw').value),
+                pw: parseFloat(document.getElementById('pw').value),
+                cpm: parseFloat(document.getElementById('cpm').value),
+                rw: parseFloat(document.getElementById('rw').value),
+                pm: parseFloat(document.getElementById('pm').value),
+                aw: parseFloat(document.getElementById('aw').value),
+                rm: parseFloat(document.getElementById('rm').value),
+            };
+
+            let showWarning = false;
+            let loggedInput = {};
+
+            for (const key in inputs) {
+                if (inputs[key] > thresholds[key]) {
+                    showWarning = true;
+                    loggedInput[key] = inputs[key];
+                }
+            }
+
+            if (showWarning) {
+                document.getElementById('warning').style.display = 'block';
+                fetch('/log-unusual-inputs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(loggedInput)
+                });
+                return confirm("Some values appear unusually high. Do you want to continue?");
+            }
+
+            return true;
+        }
+
+        function downloadPDF() {
+            const element = document.querySelector('.result');
+            const opt = {
+                margin:       0.5,
+                filename:     'prediction_result.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().from(element).set(opt).save();
+        }
+    </script>
+   <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const coll = document.querySelector(".collapsible");
+        const content = document.querySelector(".content");
+
+        coll.addEventListener("click", function() {
+            this.classList.toggle("active");
+            content.classList.toggle("collapsed");
+        });
+    });
+</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </body>
 </html>

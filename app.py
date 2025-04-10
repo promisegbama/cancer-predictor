@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import joblib
 import numpy as np
 import pandas as pd
+import json
 import os
 
 app = Flask(__name__, template_folder='templates')
@@ -14,6 +15,23 @@ pipeline = joblib.load('detector.joblib')
 def home():
     template_dir = os.path.abspath('./')
     return render_template('index.html', template_dir=template_dir)
+
+@app.route('/log-unusual-inputs', methods=['POST'])
+def log_unusual_inputs():
+    data = request.json
+    log_path = 'unusual_inputs_log.json'
+
+    if not os.path.exists(log_path):
+        with open(log_path, 'w') as f:
+            json.dump([], f)
+
+    with open(log_path, 'r+') as f:
+        logs = json.load(f)
+        logs.append(data)
+        f.seek(0)
+        json.dump(logs, f, indent=2)
+
+    return {'status': 'logged'}, 200
 
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
