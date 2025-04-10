@@ -1,58 +1,87 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Cancer Detection</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-  </head>
-  <body>
-    <div class="container">
-      <h1>Welcome to my Cancer Type Predictor App!</h1>
-      <form action="{{ url_for('predict') }}" method="POST">
-        <div class="form-row">
-          <div class="form-column">
-            <label for="concave-points-worst">concave points_worst:</label>
-            <input type="text" id="concave-points-worst" name="concave points_worst">
-          
-            <label for="perimeter-worst">perimeter_worst:</label>
-            <input type="text" id="perimeter-worst" name="perimeter_worst">
-          
-            <label for="concave-points-mean">concave points_mean:</label>
-            <input type="text" id="concave-points-mean" name="concave points_mean">
-          </div>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cancer Type Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            padding: 2rem;
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            color: #333;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 1rem;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 2rem;
+            padding: 10px 20px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #e2e3e5;
+            border-radius: 5px;
+        }
+        .benign {
+            color: green;
+        }
+        .malignant {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to My Cancer Type Predictor App! 🧬</h1>
 
-          <div class="form-column">
-            <label for="radius-worst">radius_worst:</label>
-            <input type="text" id="radius-worst" name="radius_worst">
-          
-            <label for="perimeter-mean">perimeter_mean:</label>
-            <input type="text" id="perimeter-mean" name="perimeter_mean">
-          
-            <label for="area-worst">area_worst:</label>
-            <input type="text" id="area-worst" name="area_worst">
-          </div>
+    <form method="POST" action="/predict">
+        <label>Concave Points (Worst):</label>
+        <input type="number" step="any" name="concave points_worst" placeholder="e.g. 0.2654" required>
 
-          <div class="form-column">
-            <label for="radius-mean">radius_mean:</label>
-            <input type="text" id="radius-mean" name="radius_mean">
-          
-            <input type="submit" value="Predict" class="submit-btn">
-          </div>
-        </div>
-      </form>
+        <label>Perimeter (Worst):</label>
+        <input type="number" step="any" name="perimeter_worst" placeholder="e.g. 184.6" required>
 
-      {% if prediction is not none and prediction != '' %}
-        <div class="row">
-          <div class="col-md-6 offset-md-3">
-            <div class="result">
-              <h3 class="text-center mt-5 mb-3">Results</h3>
-              <p class="text-center prediction {{ prediction_color }}">{{ prediction }}</p>
-            </div>
-          </div>
-        </div>
-      {% endif %}
+        <label>Concave Points (Mean):</label>
+        <input type="number" step="any" name="concave points_mean" placeholder="e.g. 0.1471" required>
+
+        <label>Radius (Worst):</label>
+        <input type="number" step="any" name="radius_worst" placeholder="e.g. 25.38" required>
+
+        <hr style="margin-top:2rem; margin-bottom:2rem;">
+
+        <label>Perimeter (Mean):</label>
+        <input type="number" step="any" name="perimeter_mean" placeholder="e.g. 122.8" required>
+
+        <label>Area (Worst):</label>
+        <input type="number" step="any" name="area_worst" placeholder="e.g. 2019" required>
+
+        <label>Radius (Mean):</label>
+        <input type="number" step="any" name="radius_mean" placeholder="e.g. 17.99" required>
+
+        <button type="submit">Predict Cancer Type</button>
+    </form>
+
+    {% if prediction %}
+    <div class="result {{ prediction_color }}">
+        <h3>Prediction Result: {{ prediction }}</h3>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"
-      integrity="sha384-fSKjzWeIWJK6D0bRyG9yB1pi1N5itABItxh2rvRy+j"></script>
-  </body>
+    {% endif %}
+</body>
 </html>
