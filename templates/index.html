@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cancer Detection</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Welcome to my Cancer Type Predictor app!</h1>
+      <form action="{{ url_for('predict') }}" method="POST">
+        <div class="form-row">
+          <div class="form-column">
+            <label for="concave-points-worst">concave points_worst:</label>
+            <input type="text" id="concave-points-worst" name="concave points_worst">
+          
+            <label for="perimeter-worst">perimeter_worst:</label>
+            <input type="text" id="perimeter-worst" name="perimeter_worst">
+          
+            <label for="concave-points-mean">concave points_mean:</label>
+            <input type="text" id="concave-points-mean" name="concave points_mean">
+          </div>
+
+          <div class="form-column">
+            <label for="radius-worst">radius_worst:</label>
+            <input type="text" id="radius-worst" name="radius_worst">
+          
+            <label for="perimeter-mean">perimeter_mean:</label>
+            <input type="text" id="perimeter-mean" name="perimeter_mean">
+          
+            <label for="area-worst">area_worst:</label>
+            <input type="text" id="area-worst" name="area_worst">
+          </div>
+
+          <div class="form-column">
+            <label for="radius-mean">radius_mean:</label>
+            <input type="text" id="radius-mean" name="radius_mean">
+          
+            <input type="submit" value="Predict" class="submit-btn">
+          </div>
+        </div>
+      </form>
+
+      {% if prediction is not none and prediction != '' %}
+        <div class="row">
+          <div class="col-md-6 offset-md-3">
+            <div class="result">
+              <h3 class="text-center mt-5 mb-3">Results</h3>
+              <p class="text-center prediction {{ prediction_color }}">{{ prediction }}</p>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"
+      integrity="sha384-fSKjzWeIWJK6D0bRyG9yB1pi1N5itABItxh2rvRy+j"></script>
+  </body>
+</html>
