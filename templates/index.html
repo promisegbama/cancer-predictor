@@ -105,15 +105,16 @@
             }
         });
     </script>
-    <script>
-        const audio = new Audio();
-        {% if prediction_color == 'malignant' %}
-        audio.src = '{{ url_for('static', filename='alert.mp3') }}';
-        {% else %}
-        audio.src = '{{ url_for('static', filename='safe.mp3') }}';
-        {% endif %}
-        audio.play();
-    </script>
+   <script>
+    const audio = new Audio();
+    {% if prediction_color == 'malignant' %}
+    audio.src = '{{ url_for('static', filename='alert.mp3') }}';
+    {% else %}
+    audio.src = '{{ url_for('static', filename='safe.mp3') }}';
+    {% endif %}
+    audio.play();
+  </script>
+  
     {% endif %}
 
     <div class="footer">
@@ -126,13 +127,13 @@
         };
 
         function fillDemoValues() {
-            document.getElementById('cpw').value = 0.2654;
-            document.getElementById('pw').value = 184.6;
-            document.getElementById('cpm').value = 0.1471;
-            document.getElementById('rw').value = 25.38;
-            document.getElementById('pm').value = 122.8;
-            document.getElementById('aw').value = 2019;
-            document.getElementById('rm').value = 17.99;
+            document.getElementById('cpw').value = 0.28;
+            document.getElementById('pw').value = 165;
+            document.getElementById('cpm').value = 0.19;
+            document.getElementById('rw').value = 25.4;
+            document.getElementById('pm').value = 130;
+            document.getElementById('aw').value = 2100;
+            document.getElementById('rm').value = 19.5;
         }
 
         function clearForm() {
@@ -195,15 +196,16 @@
     </script>
    <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const coll = document.querySelector(".collapsible");
-        const content = document.querySelector(".content");
-
-        coll.addEventListener("click", function() {
-            this.classList.toggle("active");
-            content.classList.toggle("collapsed");
-        });
+      const coll = document.querySelector(".collapsible");
+      const content = document.querySelector(".content");
+  
+      coll.addEventListener("click", function () {
+        this.classList.toggle("active");
+        content.classList.toggle("collapsed");
+      });
     });
-</script>
+  </script>
+  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </body>
 </html>

@@ -136,9 +136,10 @@ button:hover {
         animation: fadeIn 0.3s ease-in-out;
     }
 
-    .content.collapsed {
+    .collapsed {
         display: none;
-    }
+      }
+      
 
     @keyframes fadeIn {
         from { opacity: 0; }
