@@ -121,18 +121,25 @@
 
     <div style="margin-top: 3rem;">
         <h2>🗨️ Share Your Feedback</h2>
-        {% if not user_feedback %}
         <form method="POST" action="/comment">
-            <textarea name="feedback" placeholder="Tell us what you think about this app..." rows="5" style="width:100%; padding:10px; border-radius:4px;"></textarea>
+            <textarea name="feedback" placeholder="Tell us what you think about this app..." rows="5" style="width:100%; padding:10px; border-radius:4px;" required></textarea>
             <button type="submit" style="margin-top: 1rem; background-color: #007bff;">Submit Feedback</button>
         </form>
-        {% else %}
-        <div style="background: #e9f7ef; padding: 15px; border-radius: 5px;">
-            <p><strong>📝 Your Feedback ({{ user_feedback_time }}):</strong></p>
-            <p>{{ user_feedback }}</p>
+    
+        {% if comments %}
+        <div style="margin-top: 2rem;">
+            <h3>💬 Previous Feedback</h3>
+            <ul style="list-style: none; padding-left: 0;">
+                {% for comment in comments %}
+                <li style="margin-bottom: 1rem; background: #f1f1f1; padding: 10px; border-radius: 6px;">
+                    <strong>{{ comment.time }}</strong><br>
+                    {{ comment.text }}
+                </li>
+                {% endfor %}
+            </ul>
         </div>
         {% endif %}
-    </div>
+    </div>    
 
     <script>
         const audio = new Audio();

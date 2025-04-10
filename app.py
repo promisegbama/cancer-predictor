@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+from datetime import datetime
 import joblib
 import numpy as np
 import pandas as pd
@@ -34,20 +35,34 @@ def log_unusual_inputs():
     return {'status': 'logged'}, 200
 
 
-from datetime import datetime
+app = Flask(__name__)
+COMMENTS_FILE = 'comments.json'
 
-user_feedback = None
-user_feedback_time = None
+def load_comments():
+    try:
+        with open(COMMENTS_FILE, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+
+def save_comments(comments):
+    with open(COMMENTS_FILE, 'w') as f:
+        json.dump(comments, f)
+
+@app.route('/')
+def home():
+    comments = load_comments()
+    return render_template("index.html", comments=comments)
 
 @app.route('/comment', methods=['POST'])
 def comment():
-    global user_feedback, user_feedback_time
     feedback = request.form.get('feedback')
-    if feedback and not user_feedback:
-        user_feedback = feedback
-        user_feedback_time = datetime.now().strftime('%Y-%m-%d %H:%M')
-    return render_template("index.html", user_feedback=user_feedback, user_feedback_time=user_feedback_time)
-
+    if feedback:
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        comments = load_comments()
+        comments.append({'text': feedback, 'time': timestamp})
+        save_comments(comments)
+    return render_template("index.html", comments=load_comments())
 
 
 @app.route('/predict', methods=['POST'])
