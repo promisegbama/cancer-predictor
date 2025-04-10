@@ -76,12 +76,17 @@
     </form>
 
     {% if prediction %}
-    <div class="result {{ prediction_color }}">
-      <h3>Prediction Result: {{ prediction }}</h3>
-      <p>🧠 Confidence Score: {{ confidence or 'N/A' }}%</p>
-      <p>📊 Model Insight: The prediction is influenced mostly by features such as concave points and perimeter measurements.</p>
-      <button onclick="downloadPDF()">📄 Export as PDF</button>
-    </div>
+    <div id="pdf-export">
+        <div class="result {{ prediction_color }}">
+          <h3>Prediction Result: {{ prediction }}</h3>
+          <p>🧠 Confidence Score: {{ confidence or 'N/A' }}%</p>
+          <p>📊 Model Insight: The prediction is influenced mostly by features such as concave points and perimeter measurements.</p>
+          <button onclick="downloadPDF()">📄 Export as PDF</button>
+        </div>
+  
+        <canvas id="chart" style="max-width: 100%; margin-top: 2rem;"></canvas>
+      </div>
+
     <script>
         const chartCtx = document.getElementById('chart').getContext('2d');
         new Chart(chartCtx, {
@@ -105,8 +110,6 @@
         });
     </script>
     {% endif %}
-
-    <canvas id="chart" style="max-width: 100%; margin-top: 2rem;"></canvas>
 
     <script>
         const audio = new Audio();
@@ -189,7 +192,7 @@
         });
 
         function downloadPDF() {
-            const element = document.querySelector('.result');
+            const element = document.getElementById('pdf-export');
             if (!element) {
                 alert("No result found to export!");
                 return;
@@ -203,7 +206,9 @@
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
 
-            html2pdf().from(element).set(opt).save();
+            setTimeout(() => {
+                html2pdf().from(element).set(opt).save();
+            }, 500);
         }
     </script>
 </body>
