@@ -34,15 +34,20 @@ def log_unusual_inputs():
     return {'status': 'logged'}, 200
 
 
-comments_list = []
+from datetime import datetime
 
-@app.route("/comment", methods=["POST"])
+user_feedback = None
+user_feedback_time = None
+
+@app.route('/comment', methods=['POST'])
 def comment():
-    feedback = request.form.get("feedback")
-    if feedback:
-        comments_list.append(feedback)
-        # Optional: Save to a text file or database here
-    return render_template("index.html", comments=comments_list)
+    global user_feedback, user_feedback_time
+    feedback = request.form.get('feedback')
+    if feedback and not user_feedback:
+        user_feedback = feedback
+        user_feedback_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+    return render_template("index.html", user_feedback=user_feedback, user_feedback_time=user_feedback_time)
+
 
 
 @app.route('/predict', methods=['POST'])
