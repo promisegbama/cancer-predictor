@@ -5,6 +5,7 @@
     <title>Smart Breast Cancer Risk Predictor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
     <h1>🩺 Smart Breast Cancer Risk Predictor</h1>
@@ -77,22 +78,19 @@
     {% if prediction %}
     <div class="result {{ prediction_color }}">
       <h3>Prediction Result: {{ prediction }}</h3>
-      <p>🧠 Confidence Score: {{ confidence }}%</p>
+      <p>🧠 Confidence Score: {{ confidence or 'N/A' }}%</p>
       <p>📊 Model Insight: The prediction is influenced mostly by features such as concave points and perimeter measurements.</p>
       <button onclick="downloadPDF()">📄 Export as PDF</button>
     </div>
-    {% endif %}
-
-    <canvas id="chart" style="max-width: 100%; margin-top: 2rem;"></canvas>
     <script>
-        const ctx = document.getElementById('chart').getContext('2d');
-        new Chart(ctx, {
+        const chartCtx = document.getElementById('chart').getContext('2d');
+        new Chart(chartCtx, {
             type: 'bar',
             data: {
                 labels: ['Concave Pts Worst', 'Perimeter Worst', 'Concave Pts Mean', 'Radius Worst', 'Perimeter Mean', 'Area Worst', 'Radius Mean'],
                 datasets: [{
                     label: 'Your Input Values',
-                    data: [{{ input_values|join(',') }}],
+                    data: {{ input_values | tojson }},
                     backgroundColor: '#007bff'
                 }]
             },
@@ -106,6 +104,9 @@
             }
         });
     </script>
+    {% endif %}
+
+    <canvas id="chart" style="max-width: 100%; margin-top: 2rem;"></canvas>
 
     <script>
         const audio = new Audio();
