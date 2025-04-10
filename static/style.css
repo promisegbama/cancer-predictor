@@ -107,7 +107,7 @@ button:hover {
     button {
         padding: 10px;
     }
-    .collapsible {
+.collapsible {
         background-color: #eef6ff;
         color: #333;
         cursor: pointer;
@@ -121,50 +121,34 @@ button:hover {
         border-radius: 8px;
         margin-bottom: 5px;
         transition: background-color 0.3s ease;
-    }
-
-    .active, .collapsible:hover {
+      }
+  
+      .active, .collapsible:hover {
         background-color: #cde4fc;
-    }
-
-    .content {
+      }
+  
+      .content {
         padding: 1rem 1.5rem;
         display: block;
         background-color: #eef6ff;
         border-radius: 8px;
         margin-bottom: 1rem;
         animation: fadeIn 0.3s ease-in-out;
-    }
-
-    .collapsed {
+      }
+  
+      .collapsed {
         display: none;
       }
-      
-
-    @keyframes fadeIn {
+  
+      @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
-    }
-
-    .content ul {
-        list-style-type: disc;
-        padding-left: 1.2rem;
-    }
-
-    .content li {
-        margin-bottom: 0.5rem;
-    }
-
-    .field-label {
-        font-weight: bold;
-        display: block;
-        margin-top: 1rem;
-    }
-
-    .info-tip {
+      }
+  
+      .info-tip {
         display: inline-block;
         margin-left: 6px;
         cursor: help;
         font-size: 0.9rem;
         color: #007bff;
-    }
+      }

@@ -76,12 +76,13 @@
 
     {% if prediction %}
     <div class="result {{ prediction_color }}">
-        <h3>Prediction Result: {{ prediction }}</h3>
-        <p>🧠 Confidence Score: {{ confidence }}%</p>
-        <p>📊 Model Insight: The prediction is influenced mostly by features such as concave points and perimeter measurements, which are strong indicators of malignancy in tumors.</p>
-        <button onclick="downloadPDF()">📄 Export as PDF</button>
+      <h3>Prediction Result: {{ prediction }}</h3>
+      <p>🧠 Confidence Score: {{ confidence }}%</p>
+      <p>📊 Model Insight: The prediction is influenced mostly by features such as concave points and perimeter measurements.</p>
+      <button onclick="downloadPDF()">📄 Export as PDF</button>
     </div>
-
+    {% endif %}
+  
     <canvas id="chart" style="max-width: 100%; margin-top: 2rem;"></canvas>
     <script>
         const ctx = document.getElementById('chart').getContext('2d');
@@ -105,6 +106,7 @@
             }
         });
     </script>
+
    <script>
     const audio = new Audio();
     {% if prediction_color == 'malignant' %}
@@ -114,8 +116,6 @@
     {% endif %}
     audio.play();
   </script>
-  
-    {% endif %}
 
     <div class="footer">
         Developed by <strong>Promise Gbama</strong> | Powered by Machine Learning 🧠
@@ -181,31 +181,37 @@
 
             return true;
         }
+ </script>
 
-        function downloadPDF() {
-            const element = document.querySelector('.result');
-            const opt = {
-                margin:       0.5,
-                filename:     'prediction_result.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
-            html2pdf().from(element).set(opt).save();
-        }
-    </script>
-   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const coll = document.querySelector(".collapsible");
-      const content = document.querySelector(".content");
-  
-      coll.addEventListener("click", function () {
-        this.classList.toggle("active");
-        content.classList.toggle("collapsed");
-      });
-    });
-  </script>
-  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const coll = document.querySelector(".collapsible");
+          const content = document.querySelector(".content");
+    
+          coll.addEventListener("click", function () {
+            this.classList.toggle("active");
+            content.classList.toggle("collapsed");
+          });
+        });
+    
+        function downloadPDF() {
+          const element = document.querySelector('.result');
+          if (!element) {
+            alert("No result found to export!");
+            return;
+          }
+    
+          const opt = {
+            margin: 0.5,
+            filename: 'prediction_result.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+          };
+    
+          html2pdf().from(element).set(opt).save();
+        }
+      </script>
 </body>
 </html>
