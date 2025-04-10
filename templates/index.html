@@ -78,11 +78,19 @@
     {% if prediction %}
     <div id="pdf-export">
         <div class="result {{ prediction_color }}">
-          <h3>Prediction Result: {{ prediction }}</h3>
-          <p>🧠 Confidence Score: {{ confidence or 'N/A' }}%</p>
-          <p>📊 Model Insight: The prediction is influenced mostly by features such as concave points and perimeter measurements.</p>
-          <button onclick="downloadPDF()">📄 Export as PDF</button>
-        </div>
+            <h3>🧾 Diagnosis Summary</h3>
+            <p><strong>Prediction:</strong> {{ prediction }}</p>
+            <p><strong>Confidence Score:</strong> {{ confidence or 'N/A' }}%</p>
+            <p><strong>Interpretation:</strong>
+              {% if prediction == 'Malignant' %}
+              The result suggests a high risk of breast cancer. Immediate medical attention and follow-up diagnostics are strongly recommended.
+              {% else %}
+              The tumor appears to be benign. However, regular screenings and consultations are advised.
+              {% endif %}
+            </p>
+            <p><strong>Model Insight:</strong> This prediction is based on key tumor characteristics such as radius, perimeter, area, and concave points.</p>
+            <button onclick="downloadPDF()">📄 Export Full Report as PDF</button>
+          </div>
   
         <canvas id="chart" style="max-width: 100%; margin-top: 2rem;"></canvas>
       </div>
@@ -110,6 +118,27 @@
         });
     </script>
     {% endif %}
+
+    <div style="margin-top: 3rem;">
+        <h2>🗨️ Share Your Feedback</h2>
+        <form method="POST" action="/comment">
+            <textarea name="feedback" placeholder="Tell us what you think about this app..." rows="5" style="width:100%; padding:10px; border-radius:4px;"></textarea>
+            <button type="submit" style="margin-top: 1rem; background-color: #007bff;">Submit Feedback</button>
+        </form>
+    </div>
+
+    {% if comments %}
+<div style="margin-top: 2rem;">
+    <h3>🗣️ What Others Are Saying</h3>
+    <ul style="list-style: none; padding-left: 0;">
+        {% for comment in comments %}
+        <li style="margin-bottom: 1rem; background: #f1f1f1; padding: 10px; border-radius: 6px;">
+            {{ comment }}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
 
     <script>
         const audio = new Audio();

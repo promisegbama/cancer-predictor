@@ -33,6 +33,18 @@ def log_unusual_inputs():
 
     return {'status': 'logged'}, 200
 
+
+comments_list = []
+
+@app.route("/comment", methods=["POST"])
+def comment():
+    feedback = request.form.get("feedback")
+    if feedback:
+        comments_list.append(feedback)
+        # Optional: Save to a text file or database here
+    return render_template("index.html", comments=comments_list)
+
+
 @app.route('/predict', methods=['POST'])
 def predict():
     input_values = [
