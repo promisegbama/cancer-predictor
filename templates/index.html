@@ -24,43 +24,43 @@
     <form method="POST" action="/predict" onsubmit="return validateInputs()">
         <label class="field-label">
             Concave Points (Worst)
-            <span class="info-tip" title="Sharpness of tumor's edge at worst point."></span>
+            <span class="info-tip" title="Sharpness of tumor's edge at worst point.">❓</span>
         </label>
         <input type="number" step="any" name="concave points_worst" id="cpw" required>
 
         <label class="field-label">
             Perimeter (Worst)
-            <span class="info-tip" title="Longest outline distance of tumor in worst case."></span>
+            <span class="info-tip" title="Longest outline distance of tumor in worst case.">❓</span>
         </label>
         <input type="number" step="any" name="perimeter_worst" id="pw" required>
 
         <label class="field-label">
             Concave Points (Mean)
-            <span class="info-tip" title="Average sharpness of the tumor's edges."></span>
+            <span class="info-tip" title="Average sharpness of the tumor's edges.">❓</span>
         </label>
         <input type="number" step="any" name="concave points_mean" id="cpm" required>
 
         <label class="field-label">
             Radius (Worst)
-            <span class="info-tip" title="Largest radius of the tumor recorded."></span>
+            <span class="info-tip" title="Largest radius of the tumor recorded.">❓</span>
         </label>
         <input type="number" step="any" name="radius_worst" id="rw" required>
 
         <label class="field-label">
             Perimeter (Mean)
-            <span class="info-tip" title="Average distance around the tumor."></span>
+            <span class="info-tip" title="Average distance around the tumor.">❓</span>
         </label>
         <input type="number" step="any" name="perimeter_mean" id="pm" required>
 
         <label class="field-label">
             Area (Worst)
-            <span class="info-tip" title="Maximum surface area covered by the tumor."></span>
+            <span class="info-tip" title="Maximum surface area covered by the tumor.">❓</span>
         </label>
         <input type="number" step="any" name="area_worst" id="aw" required>
 
         <label class="field-label">
             Radius (Mean)
-            <span class="info-tip" title="Average radius of the tumor."></span>
+            <span class="info-tip" title="Average radius of the tumor.">❓</span>
         </label>
         <input type="number" step="any" name="radius_mean" id="rm" required>
 
@@ -82,7 +82,7 @@
       <button onclick="downloadPDF()">📄 Export as PDF</button>
     </div>
     {% endif %}
-  
+
     <canvas id="chart" style="max-width: 100%; margin-top: 2rem;"></canvas>
     <script>
         const ctx = document.getElementById('chart').getContext('2d');
@@ -107,15 +107,15 @@
         });
     </script>
 
-   <script>
-    const audio = new Audio();
-    {% if prediction_color == 'malignant' %}
-    audio.src = '{{ url_for('static', filename='alert.mp3') }}';
-    {% else %}
-    audio.src = '{{ url_for('static', filename='safe.mp3') }}';
-    {% endif %}
-    audio.play();
-  </script>
+    <script>
+        const audio = new Audio();
+        {% if prediction_color == 'malignant' %}
+        audio.src = '{{ url_for('static', filename='alert.mp3') }}';
+        {% else %}
+        audio.src = '{{ url_for('static', filename='safe.mp3') }}';
+        {% endif %}
+        audio.play();
+    </script>
 
     <div class="footer">
         Developed by <strong>Promise Gbama</strong> | Powered by Machine Learning 🧠
@@ -140,10 +140,6 @@
             const fields = ['cpw', 'pw', 'cpm', 'rw', 'pm', 'aw', 'rm'];
             fields.forEach(id => document.getElementById(id).value = '');
             document.getElementById('warning').style.display = 'none';
-        }
-
-        function showSpinner() {
-            document.getElementById('spinner').style.display = 'block';
         }
 
         function validateInputs() {
@@ -181,37 +177,33 @@
 
             return true;
         }
- </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script>
         document.addEventListener("DOMContentLoaded", () => {
-          const coll = document.querySelector(".collapsible");
-          const content = document.querySelector(".content");
-    
-          coll.addEventListener("click", function () {
-            this.classList.toggle("active");
-            content.classList.toggle("collapsed");
-          });
+            const coll = document.querySelector(".collapsible");
+            const content = document.querySelector(".content");
+            coll.addEventListener("click", function () {
+                this.classList.toggle("active");
+                content.classList.toggle("collapsed");
+            });
         });
-    
+
         function downloadPDF() {
-          const element = document.querySelector('.result');
-          if (!element) {
-            alert("No result found to export!");
-            return;
-          }
-    
-          const opt = {
-            margin: 0.5,
-            filename: 'prediction_result.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-          };
-    
-          html2pdf().from(element).set(opt).save();
+            const element = document.querySelector('.result');
+            if (!element) {
+                alert("No result found to export!");
+                return;
+            }
+
+            const opt = {
+                margin: 0.5,
+                filename: 'prediction_result.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().from(element).set(opt).save();
         }
-      </script>
+    </script>
 </body>
 </html>
