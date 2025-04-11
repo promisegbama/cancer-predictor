@@ -10,6 +10,14 @@
 <body>
     <h1>🩺 Smart Breast Cancer Risk Predictor</h1>
 
+    {% if is_admin %}
+    <div style="background: #d4edda; padding: 10px; border-left: 5px solid #28a745; margin-bottom: 20px;">
+        👋 Welcome, Admin! You can delete comments. <a href="/logout">Logout</a> | <a href="/admin-dashboard">View All Feedback</a>
+    </div>
+    {% else %}
+    <div style="text-align: right; margin-bottom: 1rem;"><a href="/login">🔐 Admin Login</a></div>
+    {% endif %}
+
     <button class="collapsible">🆘 Help Panel</button>
     <div class="content collapsed">
         <ul>
@@ -125,21 +133,41 @@
             <textarea name="feedback" placeholder="Tell us what you think about this app..." rows="5" style="width:100%; padding:10px; border-radius:4px;" required></textarea>
             <button type="submit" style="margin-top: 1rem; background-color: #007bff;">Submit Feedback</button>
         </form>
-    
-        {% if comments %}
+     {% if comments %}
         <div style="margin-top: 2rem;">
-            <h3>💬 Previous Feedback</h3>
+            <h3>💬 Recent Feedback</h3>
             <ul style="list-style: none; padding-left: 0;">
                 {% for comment in comments %}
                 <li style="margin-bottom: 1rem; background: #f1f1f1; padding: 10px; border-radius: 6px;">
-                    <strong>{{ comment.time }}</strong><br>
+                    <strong>{{ comment.username or 'Anonymous' }} - {{ comment.time }}</strong><br>
                     {{ comment.text }}
+                    {% if is_admin %}
+                    <div style="font-size: 0.85rem; color: #888; margin-top: 4px;">
+                        🖥️ IP: {{ comment.ip }} | Device: {{ comment.device }}
+                    </div>
+                    <form method="POST" action="/delete-comment/{{ loop.index0 }}" style="display:inline; float:right;">
+                        <button type="submit" style="background-color: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px;">Delete</button>
+                    </form>
+                    {% endif %}
                 </li>
                 {% endfor %}
             </ul>
+
+            {% if total_pages > 1 %}
+            <div style="text-align: center; margin-top: 1rem;">
+                {% if current_page > 1 %}
+                    <a href="/?page={{ current_page - 1 }}">⬅ Previous</a>
+                {% endif %}
+                &nbsp; Page {{ current_page }} of {{ total_pages }} &nbsp;
+                {% if current_page < total_pages %}
+                    <a href="/?page={{ current_page + 1 }}">Next ➡</a>
+                {% endif %}
+            </div>
+            {% endif %}
         </div>
         {% endif %}
-    </div>    
+    </div>
+  
 
     <script>
         const audio = new Audio();

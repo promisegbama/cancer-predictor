@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, session
 from datetime import datetime
 import joblib
 import numpy as np
@@ -34,9 +34,12 @@ def log_unusual_inputs():
 
     return {'status': 'logged'}, 200
 
-
 app = Flask(__name__)
+app.secret_key = 'your_secret_key_here'
+
 COMMENTS_FILE = 'comments.json'
+ADMIN_USERNAME = 'admin'
+ADMIN_PASSWORD = 'password123'  # Change to something secure
 
 def load_comments():
     try:
@@ -51,18 +54,75 @@ def save_comments(comments):
 
 @app.route('/')
 def home():
+    page = int(request.args.get('page', 1))
     comments = load_comments()
-    return render_template("index.html", comments=comments)
+    per_page = 5
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_comments = comments[start:end]
+    total_pages = (len(comments) + per_page - 1) // per_page
+
+    return render_template("index.html",
+                           comments=paginated_comments,
+                           is_admin=session.get('is_admin', False),
+                           current_page=page,
+                           total_pages=total_pages)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        if request.form['username'] == ADMIN_USERNAME and request.form['password'] == ADMIN_PASSWORD:
+            session['is_admin'] = True
+            return redirect(url_for('home'))
+        return 'Invalid credentials'
+    return '''
+        <form method="post">
+            <input name="username" placeholder="Username">
+            <input name="password" type="password" placeholder="Password">
+            <button type="submit">Login</button>
+        </form>
+    '''
+
+@app.route('/logout')
+def logout():
+    session.pop('is_admin', None)
+    return redirect(url_for('home'))
 
 @app.route('/comment', methods=['POST'])
 def comment():
+    username = request.form.get('username') or 'Anonymous'
     feedback = request.form.get('feedback')
+    ip = request.remote_addr
+    device = request.headers.get('User-Agent')
+
+    # 🔍 Capture user IP and browser info
+    user_ip = request.remote_addr
+    user_agent = request.headers.get('User-Agent')
+    print(f"📝 Feedback submitted by {username} from IP: {user_ip}, using: {user_agent}")
+
     if feedback:
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         comments = load_comments()
-        comments.append({'text': feedback, 'time': timestamp})
+        comments.append({
+            'username': username,
+            'text': feedback,
+            'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            'ip': ip,
+            'device': device
+        })
         save_comments(comments)
-    return render_template("index.html", comments=load_comments())
+
+    return redirect(url_for('home'))
+
+
+@app.route('/delete-comment/<int:comment_id>', methods=['POST'])
+def delete_comment(comment_id):
+    if not session.get('is_admin'):
+        return 'Unauthorized', 403
+    comments = load_comments()
+    if 0 <= comment_id < len(comments):
+        del comments[comment_id]
+        save_comments(comments)
+    return redirect(url_for('home'))
 
 
 @app.route('/predict', methods=['POST'])
