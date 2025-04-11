@@ -105,7 +105,7 @@ def comment():
         comments.append({
             'username': username,
             'text': feedback,
-            'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'ip': ip,
             'device': device
         })
